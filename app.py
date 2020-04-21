@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-import secrets
+
 import time
 import json
+import uuid
+import secrets
 from threading import Lock
 
 from flask import Flask, url_for, request
@@ -35,10 +37,10 @@ def main():
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
-    print("logout User")
-    resp = make_response(redirect(url_for('main')))
+    print("logout User", session.get('username'))
     session.pop('username', None)
-    return resp 
+    session.pop('uuid', None)
+    return make_response(redirect(url_for('main')))
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -46,12 +48,15 @@ def login():
     # ? Check if Password is Correct
     e = check_account(request)
     if (e[0] == True):
-        # use session to store username and the session id and when some one logs out the session is deleted
+        print("[Route login] Log in user", request.form["name"])
         session['username'] = request.form["name"]
+        session['uid'] = uuid.uuid4()
         return make_response(redirect(url_for('appd')))
     elif(request.form == ImmutableMultiDict([])):
+        print("[Route login] Empty Form Sent")
         return redirect(url_for('main'))
     else:
+        print("[Route login] error", e[1])
         return render_template('index.html', error=True, errormessage=e[1])
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -61,19 +66,19 @@ def register():
     # ? Check if Username has already been used
     # ? if False then store information in Database
     if e == True:
-        print("Worked app return to app")
-        resp = make_response(redirect(url_for('appd')))
+        print("[Route Register] Worked app return to app")
         session['username'] = request.form['name']
         session['friends'] = []
-        return resp 
+        return make_response(redirect(url_for('appd')))
 
     else:
-        print("Failed regis return to index")
+        print("[Route Register] Failed to Enter App")
         return render_template('index.html', error=True, errormessage=e[1])
     
 @app.route('/app', methods=['POST', 'GET'])
 def appd():
     if ('username' in session):
+        print("[Route App] app user", session['username'])
         return render_template('app.html', username=session['username'])
     else:
         print("[Route App] Failed to Enter app.html")

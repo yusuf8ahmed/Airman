@@ -5,10 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
         <link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}">
-        <script defer src="{{ url_for('static',filename='js/app.js') }}"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
-            integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
-        <script src="https://kit.fontawesome.com/f89d46e90e.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+        <script defer src="{{ url_for('static',filename='js/app.js') }}">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous">
+        </script>
+        <script src="https://kit.fontawesome.com/f89d46e90e.js" crossorigin="anonymous">
+        </script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
             integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <title>Airman</title>   
@@ -32,7 +35,7 @@
         <div class="main" style="display: block;">
             <div class="container m-0">
                 <div class="row">
-                    <div class="col-sm-2 mt-3">
+                    <div class="position-sticky col-sm-2 mt-3">
                         <button class="btn btn-primary btn-lg active btn-block" onclick="Home()">
                             Home
                         </button>  
@@ -88,11 +91,11 @@
                             </noscript>                             
                         </div>
                         <div class="display_message" style="display: none;">
-                            <div id="messlist">
+                            <div id="messlist" style="height: 540px; overflow-y: scroll">
                             </div>  
                             <div class="position-sticky">
                                 <div class="input-group  mb-5 mt-3">
-                                    <input  class="form-control" id="user_message" type="text">
+                                    <input class="form-control" id="user_message" type="text" required>
                                     <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" id="send_message" type="button" onclick="Send()">Send</button>
                                     </div>

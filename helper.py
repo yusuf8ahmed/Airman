@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Python Libary
 import uuid
 import datetime
@@ -143,12 +145,8 @@ def get_history(sr, rl):
     try:
         conn, cur = Database(dict=True)
 
-        cur.execute("""SELECT * FROM messages WHERE send = (%s) AND recv = (%s) OR send = (%s) AND recv = (%s) ORDER BY mess DESC LIMIT 50""", (rl, sr, sr, rl, ))
-        
-        # SELECT * FROM messages WHERE send = (%s) AND recv = (%s) OR send = (%s) AND recv = (%s) LIMIT 100;
-        # SELECT * FROM messages WHERE send IN ((%s), (%s)) AND recv IN ((%s), (%s));
-
-
+        cur.execute("""SELECT * FROM messages WHERE send IN ((%s), (%s)) AND recv IN ((%s), (%s)) ORDER BY date ASC LIMIT 65""", (rl, sr, rl, sr, ))
+        print(cur.mogrify("""SELECT * FROM messages WHERE send IN ((%s), (%s)) AND recv IN ((%s), (%s)) ORDER BY date ASC LIMIT 65""", (rl, sr, rl, sr, )))
         query_result = list(cur.fetchall())
         
         cur.close()

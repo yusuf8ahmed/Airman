@@ -31,7 +31,7 @@ socket.on('receive_message', function (msg) {
     if (name === msg[0]) {
         div.innerHTML = 
             `
-            <div class="d-flex justify-content-end mb-4">
+            <div class="d-flex justify-content-end mb-4 animated slideInUp">
                 <!--
                 <div class="img_cont_msg">
                     <img src="" class="rounded-circle user_img_msg">
@@ -46,13 +46,12 @@ socket.on('receive_message', function (msg) {
     } else {
         div.innerHTML = 
             `
-            <div class="d-flex justify-content-start mb-4">
+            <div class="d-flex justify-content-start mb-4 animated slideInUp">
                 <!--
                     <div class="img_cont_msg">
                         <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
                     </div>
                 -->
-                
                 <div class="msg_cotainer">
                     ${msg[2]}
                     <span class="msg_time">${new Date(msg[3]*1000).toLocaleDateString()}</span>
@@ -77,7 +76,7 @@ socket.on('receive_history', function(msg){
         if (name === msg.messages[i][0]) {
             div.innerHTML = 
                 `
-                <div class="d-flex justify-content-end mb-4">
+                <div class="d-flex justify-content-end mb-4 animated slideInUp">
                     <!--
                     <div class="img_cont_msg">
                         <img src="" class="rounded-circle user_img_msg">
@@ -92,7 +91,7 @@ socket.on('receive_history', function(msg){
         } else {
             div.innerHTML = 
                 `
-                <div class="d-flex justify-content-start mb-4">
+                <div class="d-flex justify-content-start mb-4 animated slideInUp">
                     <!--
                         <div class="img_cont_msg">
                             <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
@@ -136,7 +135,7 @@ msg.addEventListener("keyup", function(event) {
 function ScrollDown() {
     console.log("Scrolling Down");
     const chatWindow = document.getElementById("messlist");
-    window.scrollTo(0, chatWindow.scrollHeight);
+    chatWindow.lastChild.scrollIntoView({behavior: "smooth"});
 }
 
 function Receive(t, getname) {
