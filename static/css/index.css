@@ -1,0 +1,19 @@
+body{
+    margin: 0px;
+}
+
+.topbar {
+    width: 100vw;
+    height: 5rem;
+    background-color:#ECF8F8;
+    color: #000000;
+}
+
+.login_logo, .reges_logo {
+    text-align: right;
+}
+
+.t{
+    margin: auto;
+    
+}

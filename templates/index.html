@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="{{ url_for('static',filename='css/index.css') }}">
+	<script src="https://cdn.jsdelivr.net/npm/openpgp@4.10.2/dist/openpgp.min.js"></script>
+    <title>Airman</title>
+</head>
+    <body style="background: linear-gradient(to right, #74ebd5, #acb6e5); overscroll-behavior: none; overscroll-behavior-y: none;">
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: transparent;">
+            <a class="navbar-brand" onclick="ShowMain()" style="cursor:pointer;" href="{{ url_for('main') }}">
+                <img src="{{ url_for('static',filename='img/logo.svg') }}" width="30" height="30" class="d-inline-block align-top" >
+                Airman
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            	<div class="navbar-nav">
+                	<a class="nav-item nav-link" onclick="ShowLogin()" style="cursor:pointer;">Login</a>
+            		<a class="nav-item nav-link" onclick="ShowRegis()" style="cursor:pointer;">Registier</a>
+            	</div>
+        	</div>
+		</nav>
+
+		<div class="login" style="display: none;">
+			<div class="row">
+				<div class="col-sm-3">
+				</div>
+				<div class="col-sm-6">
+					<div class="login mt-3">
+						<form action="{{ url_for('login') }}" method="POST">
+							<div class="form-group">
+								<label for="formGroupExampleInput">Username</label>
+								<input class="form-control" id="formGroupExampleInput" name="name" type="text" required>
+							</div>
+							<div class="form-group">
+								<label for="formGroupExampleInput2">Password</label>
+								<input class="form-control" id="formGroupExampleInput2" name="pass" type="password" required>
+							</div>
+							<button type="submit" class="btn btn-primary">Log In</button>
+						</form>
+					</div>
+				</div>
+				<div class="col-sm-3">
+				</div>
+			</div>
+		</div>
+
+		<div class="regis" style="display: none;">
+			<div class="row">
+				<div class="col-sm-3"></div>
+				<div class="col-sm-6">
+					<div class="login mt-4">
+						<div class="alert alert-danger" id="error" role="alert" style="display: none;">
+						</div>
+						<form action="{{ url_for('register') }}" method="POST" onsubmit="return ValidateForm();">
+							<div class="form-group">
+								<div class="form-row">
+									<div class="col">
+										<label for="frist">Firstname</label>
+										<input class="form-control" id="frist" name="first" type="text" required>
+									</div>
+									<div class="col">
+										<label for="last">Lastname</label>
+										<input class="form-control" id="last" name="last" type="text" required>
+									</div>
+								  </div>
+							</div>
+							<div class="form-group">
+								<label for="mail">Email or Gmail</label>
+								<input class="form-control" id="mail" name="mail" type="email" required>
+							</div>
+							<div class="form-group">
+								<div class="form-row">
+									<div class="col">
+										<label for="name">Username</label>
+										<input class="form-control" id="name" name="name" type="text" maxlength="20" required>
+									</div>
+									<div class="col">
+										<label for="pass">Password</label>
+										<input class="form-control" id="pass" name="pass" type="password" required>
+									</div>
+								  </div>
+							</div>
+							<button type="submit" class="btn btn-primary">Sign Up</button>
+						</form>
+					</div>
+				</div>
+				<div class="col-sm-3"></div>
+			</div>
+		</div>
+
+		<div class="main" style="display: block;">
+			<div class="row">
+				<div class="col-sm-3">
+				</div>
+				<div class="col-sm-6">
+					<div class="login mt-3">
+						
+						{% if error == True %}
+						<div class="alert alert-danger" role="alert">
+							{{- errormessage -}}
+						</div>
+						{% else %}
+						{% endif %}
+
+						<div class="jumbotron jumbotron-fluid mt-3 mb-3" style="background-color: transparent;">
+							<div class="container">
+							  <h1 class="display-4">Welcome To Airman</h1>
+							  <p class="lead">The frist messaging app built for secuirty and simplicity</p>
+							</div>
+						</div>
+						
+						<!-- <div class="jumbotron jumbotron-fluid mt-3 mb-3 border border-dark" style="background-color: transparent;">
+							<div class="container">
+							  	<h1 class="display-4">Secuirty</h1>
+							  	<p class="lead">
+									At Airman we belive secuirty and encryption of passwords <br>
+									is of utmost importance ahem ahem.. not like some companies<br>
+									<a href="https://about.fb.com/news/2019/03/keeping-passwords-secure/"> Facebook </a> <br>
+									<a href="https://www.bleepingcomputer.com/news/security/robinhood-brokerage-firm-alerts-of-passwords-stored-in-clear-text/"> Robinhood </a> KEKW
+								</p>
+							</div>
+						</div> -->
+					</div>
+				</div>
+				<div class="col-sm-3">
+				</div>
+			</div>
+		</div>
+		  
+    <script src="{{ url_for('static',filename='js/index.js') }}"></script>
+    </body>
+</html>

@@ -1,0 +1,83 @@
+# Get messages login options
+
+Time based messages
+    The Client/browser is always send the time
+    and the server is querying the database based on the Time
+
+    SELECT * FROM message WHERE time >= (Current Epoch Time)
+    
+    Client       Server 
+    -> time -----------       
+    --------- <- EMpty array
+    -> time -----------
+    --------- <- EMpty array
+    -> time -----------
+    --------- <- New Message Here is the Array
+
+    Since the average human attention span is 8 seconds
+    time request will happen at a 1-2 seconds interval
+
+Comparison based messages
+
+"""
+Table Schema
+
+? account table:
+CREATE TABLE main ( 
+    first TEXT NOT NULL,
+    last TEXT NOT NULL,
+    email TEXT NOT NULL,
+    name TEXT NOT NULL,
+    hash BYTEA NOT NULL,
+    uuid TEXT NOT NULL,
+    date TIMESTAMP NOT NULL,
+    friends TEXT[]
+);
+? accounts table INSERT example:
+INSERT INTO messages (
+    first TEXT,
+    last TEXT,
+    email TEXT,
+    name TEXT,
+    hash BYTEA,
+    uuid TEXT,
+    date TIMESTAMP,
+    friends TEXT[]
+) VALUES (
+    'yusuf',
+    'ahmed',
+    'yusufahmed172@gmail.com',
+    'ttt',
+    HASH,
+    TIMESTAMP,
+    TIME[],
+)
+? messages table:
+CREATE TABLE messages (
+send TEXT NOT NULL,
+recv TEXT NOT NULL,
+date TIMESTAMP NOT NULL,
+mess TEXT NOT NULL
+);
+? messages table INSERT example:
+INSERT INTO messages (
+    send,
+    recv,
+    date,
+    mess
+) VALUES (
+    'bigboi',
+    'Billy',
+    '2010-02-08T01:40:27.425337' String Only,
+    'Hello my friend' 
+)
+? Adding friends to table
+UPDATE main
+SET friends = friends || '{"2cca5350-3f7"}'
+WHERE name = '1';
+? Adding frist friend to table
+UPDATE main
+SET friends = '{"8a4e56f7-a31"}'
+WHERE name = 'Arif_Rahman';
+
+"""
