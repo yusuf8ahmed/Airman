@@ -1,5 +1,5 @@
 /*!
- * Copyright : (C) 2092 shidded Communications Ltd Inc Corp Naruto Clan
+ * Copyright : (C) 2092  Communications Ltd Inc Corp Naruto Clan
  * Yes this real and we are a naruto clan and yes we are the true supreme leader
  * of the state of new jersey
  *
@@ -149,11 +149,18 @@ function Receive(t, getname) {
 
 function Send() {
     // Send Message to Server
-    console.log("Sending Mesage", document.getElementById("user_message").value);
-    const send_obj = [name, friend, document.getElementById("user_message").value, Math.floor(Date.now() / 1000), csocket];
-    socket.emit('send_messages', send_obj);
-    document.getElementById("user_message").value = '';
-    console.log("Sent Message", send_obj);
+    const mess = document.getElementById("user_message").value;
+
+    if (mess === ''){
+        console.log("Cannot Send Empty Message");
+        document.getElementById("user_message").value = 'Cannot Send empty message';
+    } else {
+        console.log("Sending Mesage", mess);
+        const send_obj = [name, friend, mess, Math.floor(Date.now() / 1000), csocket];
+        socket.emit('send_messages', send_obj);
+        document.getElementById("user_message").value = '';
+        console.log("Sent Message", send_obj);       
+    }
 }
 
 function Home(){

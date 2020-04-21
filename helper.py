@@ -13,9 +13,20 @@ from psycopg2 import OperationalError
 from psycopg2.extras import DictCursor
 import urllib.parse as urlparse
 
-def Database(dict=False):
-    """
-    connection to postgres database
+
+def Database(dict_option=False):
+    """Connection to Remote Database
+
+    Args:
+        dict: An open Bigtable Table instance.
+
+    Returns:
+        a set containing psycopg2 conn and cur objects
+
+        (conn, conn.cursor(cursor_factory=DictCursor))
+
+    Raises:
+        
     """
     DSN = os.environ.get('DATABASE') 
     url = urlparse.urlparse(DSN)
@@ -32,8 +43,22 @@ def Database(dict=False):
         return conn, conn.cursor(cursor_factory=DictCursor)
 
 def check_username(name):
-    """
-    check if username is real or avaible
+    """Check if username is real or available
+
+    Args:
+        name: a string that contains a name
+
+    Returns:
+        a list containing the return bool and a message to be displayed
+
+        #? Username was found
+            return [True , ""] 
+        #? Username was not found
+            return [False , ""] 
+        #? Username was not found and threw error (e = error)
+            return [False, e]
+    Raises:
+        
     """
     try:
         conn, cur = Database()
@@ -59,16 +84,45 @@ def check_username(name):
         return [False, e]
 
 def make_user(request):
-    """
-    Make a user with all required parameters
-    """
+    """Make a user with all required parameters
+
+    Args:
+        request: is an instance of werkzeug.datastructure.ImmutableMultiDict
+        and usally contains a firstname, lastname, email, password and username 
+
+            first = request.form.get("first") # firstname
+            last = request.form.get("last")   # lastname
+            email = request.form.get("mail")  # email
+            name = request.form.get("name")   # password
+            passwd = request.form.get("pass") # username
+
+    Returns:
+        a list containing the return bool and a message to be displayed 
+        
+        #? Normal execution path 
+            return (True, "")
+        #? Threw psycopg2.OperationalError
+            return (False, "Postgres Driver Internet Access Error Op Error")
+        #? Error happened due the code above
+            return (False, f"Contact Developer")
+        #? Username was taken
+            return (False, f"Username already Taken")
+
     
-    t = check_username(request.form.get("name"))
-    print(f"name: {t[0], t[1]}")
+    Raises:
+        
+    """
+
+    try:
+        t = check_username(request.form.get("name"))
+        print(f"name: {t[0], t[1]}")
+    except OperationalError:
+        print("Postgres Driver Internet Access Error Op Error")
+        return (False, "Postgres Driver Internet Access Error Op Error")
     
     if t[0] == False:
         try:
-            
+            #? Normal execution path 
             salt = bcrypt.gensalt(rounds=12)
             
             first = request.form.get("first") 
@@ -90,23 +144,49 @@ def make_user(request):
             cur.close()
             conn.close()
             
-            return True
+            return (True, "")
         except BaseException as e:  
+            #? Error happened due the code above
             print("[function make_user]", e)
-            return [False, f"Contact Developer"]
+            return (False, f"Contact Developer")
     else:
-        return [False, f"Username already Taken"]
+        #? Username was taken
+        return (False, f"Username already Taken")
 
 def check_account(request):
+    """Check if password given is correct
+
+    Args:
+        request: is an instance of werkzeug.datastructure.ImmutableMultiDict
+        and usally contains a firstname, lastname, email, password and username 
+
+            first = request.form.get("first") # firstname
+            last = request.form.get("last")   # lastname
+            email = request.form.get("mail")  # email
+            name = request.form.get("name")   # password
+            passwd = request.form.get("pass") # username
+
+    Returns:
+        a set containing the return bool and a message to be displayed 
+        
+        #? Password Matchs
+            return (True, "")
+        #? Threw psycopg2.OperationalError
+            return (False, "Postgres Driver Internet Access Error Op Error")
+        #? Password doesn't match
+            return (False, "Incorrect password")
+        #? Account doesn't exist
+            return (False, "Account doesnt exist")
+    Raises:
     """
-    Check if password given is correct 
-    """
+
     try:
         t = check_username(request.form.get("name"))
         print(f"name: {t[0], t[1]}")
     except OperationalError:
+        #? threw psycopg2.OperationalError
         print("Postgres Driver Internet Access Error Op Error")
-        return [False, "Postgres Driver Internet Access Error Op Error"]
+        return (False, "Postgres Driver Internet Access Error Op Error")
     
     if t[0] == True:
         name = request.form.get("name")
@@ -127,14 +207,17 @@ def check_account(request):
         conn.close()
 
         if bcrypt.checkpw(passwd, hashd):
+            #? Password Matchs
             print("[function check_account] Password Match")
-            return [True, ""]
+            return (True, "")
         else:
+            #? Password doesn't match
             print("[function check_account] Password doesn't match")
-            return [False, "Incorrect password"]
+            return (False, "Incorrect password")
     else:
+        #? Account doesn't exist
         print("[function check_account] Account doesn't exist")
-        return [False, "Account doesnt exist"]
+        return (False, "Account doesnt exist")
         
 def get_history(sr, rl):
     """
@@ -142,8 +225,9 @@ def get_history(sr, rl):
     sr = SendRight\n
     rl = ReceiverLeft\n
     """
+    
     try:
-        conn, cur = Database(dict=True)
+        conn, cur = Database(dict_option=True)
 
         cur.execute("""SELECT * FROM messages WHERE send IN ((%s), (%s)) AND recv IN ((%s), (%s)) ORDER BY date ASC LIMIT 65""", (rl, sr, rl, sr, ))
         print(cur.mogrify("""SELECT * FROM messages WHERE send IN ((%s), (%s)) AND recv IN ((%s), (%s)) ORDER BY date ASC LIMIT 65""", (rl, sr, rl, sr, )))
@@ -189,7 +273,7 @@ def get_room(userone, usertwo):
     get conversation id for 2 specific users
     """
     try:
-        conn, cur = Database(dict=True)
+        conn, cur = Database(dict_option=True)
 
         cur.execute("""SELECT (convoid) FROM convo WHERE userone=(%s) AND usertwo=(%s) OR userone=(%s) AND usertwo=(%s);""", (usertwo, userone, userone, usertwo,))
         
@@ -248,11 +332,12 @@ def add_friend(main, added):
         print("[function add_friend] username was not found")
         return False
 
-
     conn.commit()
     cur.close()
     conn.close()     
 
+def check_internet():
+    return NotImplementedError
 """
 Crypto Setup
 
@@ -260,27 +345,6 @@ Crypto Setup
 ? will create a Public and Private key 
 ? The server will pass the private key to you
 ? and the public will be kept by the Server
-
-# Puesdo Code
-
-import random
-
-from pgpy.constants import PubKeyAlgorithm, KeyFlags, HashAlgorithm
-from pgpy.constants import SymmetricKeyAlgorithm, CompressionAlgorithm
-
-key = pgpy.PGPKey.new(PubKeyAlgorithm.RSAEncryptOrSign, 4096)
-
-n1 = 100000098
-n2 = 500000054
-
-uid = pgpy.PGPUID.new(str(random.randint(n1,n2)), comment=str(random.randint(n1,n2)), email=f'{str(random.randint(n1,n2))}@rsadsa.lol')
-
-key.add_uid(uid, usage={KeyFlags.Sign, KeyFlags.EncryptCommunications, KeyFlags.EncryptStorage},
-            hashes=[HashAlgorithm.SHA256, HashAlgorithm.SHA384, HashAlgorithm.SHA512, HashAlgorithm.SHA224],
-            ciphers=[SymmetricKeyAlgorithm.AES256, SymmetricKeyAlgorithm.AES192, SymmetricKeyAlgorithm.AES128],
-            compression=[CompressionAlgorithm.ZLIB, CompressionAlgorithm.BZ2, CompressionAlgorithm.ZIP, CompressionAlgorithm.Uncompressed])
-
-
 
 TODO - How to send the Private Key Securely
 ? Solution Use symmetric encryption 

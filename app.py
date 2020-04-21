@@ -5,30 +5,40 @@ import json
 import uuid
 import secrets
 from threading import Lock
-
+#Python lib
 from flask import Flask, url_for, request
 from flask import render_template, make_response
 from flask import redirect, session
+#Flask lib
 from flask_socketio import SocketIO, send
 from flask_socketio import emit, join_room
 from flask_socketio import leave_room
+#Socket.io lib
 from werkzeug.datastructures import ImmutableMultiDict
-
+#MultiDict Class
 from helper import make_user, check_account
 from helper import get_history, get_friends
 from helper import push_messages, get_room
 from helper import add_friend
+# Custom Functions 
 
 # source env/bin/activate
 # to use pip = python3 -m pip
 # thread = None
 # thread_lock = Lock()
+#  Clear repo commit history 
+#  git checkout --orphan latest_branch
+#  git add -A
+#  git commit -am "commit message"
+#  git push -f origin master
+#  git branch -D master
+#  git branch -m master
 
 app = Flask(__name__)
 app.config['ENV'] = 'development'
 app.config['SECRET_KEY'] = str(secrets.token_urlsafe(16))
 socketio = SocketIO(app)
-# Keep error in session when redirecting
+
 
 @app.route('/index', methods=['POST', 'GET'])
 @app.route('/', methods=['POST', 'GET'])
@@ -65,7 +75,7 @@ def register():
     e = make_user(request)
     # ? Check if Username has already been used
     # ? if False then store information in Database
-    if e == True:
+    if e[0] == True:
         print("[Route Register] Worked app return to app")
         session['username'] = request.form['name']
         session['friends'] = []
@@ -151,7 +161,7 @@ def messages_handle(arg):
 def get_friends_handle(arg):
     # ['1']
     # Name to get friends for
-    print("Boi Getting friends for", arg, arg[0])
+    print("Getting friends for", arg, arg[0])
     r = get_friends(arg[0])
     print(r)
     emit('friends_set', r)

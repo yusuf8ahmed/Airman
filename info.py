@@ -13,7 +13,7 @@ Get messages
             date TIMESTAMP NOT NULL,
             friends TEXT[]
         );
-    ? accounts table INSERT example:
+    ? ACCOUNTS table INSERT example:
         INSERT INTO messages (
             first TEXT,
             last TEXT,
@@ -52,6 +52,7 @@ Get messages
             '2010-02-08T01:40:27.425337' String Only,
             'Hello my friend' 
         )
+
     ? FRIENDS table:
         CREATE TABLE friends (
         send TEXT NOT NULL,
@@ -67,19 +68,5 @@ Get messages
         UPDATE main
         SET friends = friends || '{"2cca5350-3f7", ""}'
         WHERE name = '1';
-
-? Clear repo commit history 
-
-    git checkout --orphan latest_branch
-
-    git add -A
-
-    git commit -am "commit message"
-
-    git branch -D master
-
-    git branch -m master
-
-    git push -f origin master
 
 """

@@ -35,8 +35,8 @@
         <div class="main" style="display: block;">
             <div class="container m-0">
                 <div class="row">
-                    <div class="position-sticky col-sm-2 mt-3">
-                        <button class="btn btn-primary btn-lg active btn-block" onclick="Home()">
+                    <div class="col-sm-2 mt-3">
+                        <button class="btn btn-outline-primary btn-lg active btn-block" onclick="Home()">
                             Home
                         </button>  
                         <div id="friendslist">
@@ -95,7 +95,7 @@
                             </div>  
                             <div class="position-sticky">
                                 <div class="input-group  mb-5 mt-3">
-                                    <input class="form-control" id="user_message" type="text" required>
+                                    <input class="form-control" id="user_message" type="text" minlength="1" maxlength="30" required>
                                     <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" id="send_message" type="button" onclick="Send()">Send</button>
                                     </div>
