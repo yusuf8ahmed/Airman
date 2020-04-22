@@ -1,5 +1,5 @@
 /*!
- * Copyright : (C) 2092  Communications Ltd Inc Corp Naruto Clan
+ * Copyright : (C) 2092 shidded Communications Ltd Inc Corp Naruto Clan
  * Yes this real and we are a naruto clan and yes we are the true supreme leader
  * of the state of new jersey
  *
@@ -123,12 +123,37 @@ socket.on('friends_set', function(msg) {
     }
 });
 
+socket.on('add_friends', function(msg) {
+    console.log("Added list", msg);
+    document.getElementById("add_friend_box").innerHTML = '';
+    const friend_box = document.getElementById("add_friend_box"); 
+    for (var i = 0; i < msg.length; i++) {
+        let div = document.createElement('div');
+        div.innerHTML = 
+        `<button class="btn btn-primary btn-lg active btn-block mt-1 mb-1 flist" onclick="alert('that is gay')">${msg[i]}</button>`;
+        friend_box.appendChild(div);        
+    }
+    
+});
+
 const msg = document.getElementById("user_message");
-msg.addEventListener("keyup", function(event) {
-    event.preventDefault();
-    if (event.keyCode === 13) {
+msg.addEventListener("keyup", function(e) {
+    e.preventDefault();
+    if (e.keyCode === 13) {
         console.log("Send Message With Click Submit");
         document.getElementById("send_message").click();
+    }
+});
+
+const addfriend = document.getElementById("add_friend_input");
+addfriend.addEventListener('input', function(e) {
+    console.log("addfriend username",e.target.value);
+    if (e.target.value === ''){
+        document.getElementById("add_friend_box").innerHTML = '';
+        console.log("addfriend username cannot be empty");
+    } else {
+        document.getElementById("add_friend_box").innerHTML = '';
+        socket.emit("find_friends", [e.target.value, name]);
     }
 });
 
@@ -141,7 +166,20 @@ function ScrollDown() {
 function Receive(t, getname) {
     cchat = true;
     friend = getname;  
+    console.log(`<p>${name}&${friend}</p>`);
     document.getElementById("messlist").innerHTML = "";
+    document.getElementsByClassName("messagename").innerHTML = `<p>${name}&${friend}</p>`;
+    document.getElementsByClassName("display_message")[0].style.display = "block";
+    document.getElementsByClassName("display_main")[0].style.display = "none";
+    socket.emit('receive', {'main':name, 'get': friend, 'time':Math.floor(Date.now() / 1000)});
+}
+
+function Addfriend(t, getname) {
+    cchat = true;
+    friend = getname;  
+    console.log(`<p>${name}&${friend}</p>`);
+    document.getElementById("messlist").innerHTML = "";
+    document.getElementsByClassName("messagename").innerHTML = `<p>${name}&${friend}</p>`;
     document.getElementsByClassName("display_message")[0].style.display = "block";
     document.getElementsByClassName("display_main")[0].style.display = "none";
     socket.emit('receive', {'main':name, 'get': friend, 'time':Math.floor(Date.now() / 1000)});

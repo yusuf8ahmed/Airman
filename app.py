@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import os
 import time
 import json
 import uuid
@@ -14,12 +14,14 @@ from flask_socketio import SocketIO, send
 from flask_socketio import emit, join_room
 from flask_socketio import leave_room
 #Socket.io lib
+import redis
+# #redis lib
 from werkzeug.datastructures import ImmutableMultiDict
 #MultiDict Class
 from helper import make_user, check_account
 from helper import get_history, get_friends
 from helper import push_messages, get_room
-from helper import add_friend
+from helper import add_friend, check_name
 # Custom Functions 
 
 # source env/bin/activate
@@ -37,8 +39,8 @@ from helper import add_friend
 app = Flask(__name__)
 app.config['ENV'] = 'development'
 app.config['SECRET_KEY'] = str(secrets.token_urlsafe(16))
+r = redis.from_url(os.environ.get("REDIS"))
 socketio = SocketIO(app)
-
 
 @app.route('/index', methods=['POST', 'GET'])
 @app.route('/', methods=['POST', 'GET'])
@@ -60,6 +62,7 @@ def login():
     if (e[0] == True):
         print("[Route login] Log in user", request.form["name"])
         session['username'] = request.form["name"]
+        r.set(session['username'], "True")
         session['uid'] = uuid.uuid4()
         return make_response(redirect(url_for('appd')))
     elif(request.form == ImmutableMultiDict([])):
@@ -80,7 +83,6 @@ def register():
         session['username'] = request.form['name']
         session['friends'] = []
         return make_response(redirect(url_for('appd')))
-
     else:
         print("[Route Register] Failed to Enter App")
         return render_template('index.html', error=True, errormessage=e[1])
@@ -161,7 +163,7 @@ def messages_handle(arg):
 def get_friends_handle(arg):
     # ['1']
     # Name to get friends for
-    print("Getting friends for", arg, arg[0])
+    print("Getting friends for", arg,"to", arg[0])
     r = get_friends(arg[0])
     print(r)
     emit('friends_set', r)
@@ -173,6 +175,15 @@ def add_friends_handle(arg):
     # arg[1] is will be added to the main friend list of friends
     print("Adding friend", arg[1], "to", arg[0])
     r = add_friend(arg[0],arg[1])
+    print(r)
+
+@socketio.on('find_friends')
+def add_friends_handle(arg):
+    # ['1']
+    # arg[0] is the name you are looking for
+    print("Looking for", arg[0], "w/", arg[1])
+    r = check_name(arg[0], arg[1])
+    emit('add_friends', r)
     print(r)
 
 if __name__ == "__main__":

@@ -1,29 +1,30 @@
 #!/usr/bin/env python3
-
-# Python Libary
 import uuid
 import datetime
 import json
 import os
-
-# Thrid Party libary
+# Python Libary
 import bcrypt
+# brcypt hashing
 import psycopg2
 from psycopg2 import OperationalError
 from psycopg2.extras import DictCursor
+# Psycopg2 Database
 import urllib.parse as urlparse
-
+# Thrid Party libary
 
 def Database(dict_option=False):
     """Connection to Remote Database
 
     Args:
-        dict: An open Bigtable Table instance.
+        dict_option: Choose if cursor should be standered or dictonary
 
     Returns:
-        a set containing psycopg2 conn and cur objects
+        a tuple containing psycopg2 conn and cur objects
 
-        (conn, conn.cursor(cursor_factory=DictCursor))
+        return (conn, conn.cursor())
+
+        return (conn, conn.cursor(cursor_factory=DictCursor))
 
     Raises:
         
@@ -97,7 +98,7 @@ def make_user(request):
             passwd = request.form.get("pass") # username
 
     Returns:
-        a list containing the return bool and a message to be displayed 
+        a tuple containing the return bool and a message to be displayed 
         
         #? Normal execution path 
             return (True, "")
@@ -167,7 +168,7 @@ def check_account(request):
             passwd = request.form.get("pass") # username
 
     Returns:
-        a set containing the return bool and a message to be displayed 
+        a tuple containing the return bool and a message to be displayed 
         
         #? Password Matchs
             return (True, "")
@@ -220,10 +221,22 @@ def check_account(request):
         return (False, "Account doesnt exist")
         
 def get_history(sr, rl):
-    """
-    get all messages history \n
-    sr = SendRight\n
-    rl = ReceiverLeft\n
+    """Get all messages history between 2 Users
+
+    Args:
+        sr: The sender of the message
+        rl: The receiver of the message
+
+    Returns:
+        a dict with a key message that hold a multiplr list of messages
+        
+        #? Normal Operation
+            i = {"messages": query_result}
+            return i
+        #? Threw Execption
+            i = {"messages": []}
+            return i
+    Raises:
     """
     
     try:
@@ -244,12 +257,22 @@ def get_history(sr, rl):
         return {"messages": []}
 
 def push_messages(sd, re, time ,mess):
-    """
-    push message to global messaging databse
-    sd: The Sender\n
-    re: Intendent Recver\n
-    time: Time in Epoch\n
-    mess: Message\n
+    """Push message to global message table
+
+    Args:
+        sd: The sender of the message
+        re: The receiver of the message
+        time: The time in epoch format
+        mess: The message in string format
+
+    Returns:
+        a bool value that represents the operation outcome
+        
+        #? Normal Operation
+            return True
+        #? Threw Execption
+            return False
+    Raises:
     """
     try:
         conn, cur = Database()
@@ -269,8 +292,22 @@ def push_messages(sd, re, time ,mess):
         return False
 
 def get_room(userone, usertwo):
-    """
-    get conversation id for 2 specific users
+    """Get convoid/roomid for 2 users
+
+    Args:
+        userone: The frist user
+        usertwo: The Second user
+
+        #? The one and two mean nothing
+
+    Returns:
+        a bool value that represents the operation outcome
+        
+        #? Normal Operation
+            return True
+        #? Threw Execption
+            return False
+    Raises:
     """
     try:
         conn, cur = Database(dict_option=True)
@@ -287,8 +324,19 @@ def get_room(userone, usertwo):
         return []
 
 def get_friends(name):
-    """
-    gets all friends for a specific user
+    """Gets friends for a specific user
+
+    Args:
+        name: The name of the user that you wont to find
+
+    Returns:
+        a list of string that are friends of the user searched
+        
+        #? Normal Operation
+            return [str, str ...]
+        #? Threw Execption
+            return []
+    Raises:
     """
     try:
         
@@ -308,33 +356,85 @@ def get_friends(name):
         print("[function get_friends]",e)
         return []
 
-def add_friend(main, added):
-    """
-    adds friend to a specific user
+def add_friend(main, add):
+    """adds friend to a specific user
+
+    Args:
+        main: The name of the user that you want to add
+        add: The name of the user that you want to add 
+
+    Returns:
+        a list of string that are friends of the user searched
+        
+        #? Normal Operation
+            return Ture
+        #? Could not find friend
+            return False
+        #? Threw Execption
+            return False
+    Raises:
     """
 
     conn, cur = Database()
 
-    t = check_username(added)
+    t = check_username(add)
     print(f"Adding User: {t[0], t[1]}")
     
     if t[0] == True:
         try:
-            cur.execute("""SELECT uuid FROM main WHERE name = (%s);""", (added))
+            cur.execute("""SELECT uuid FROM main WHERE name = (%s);""", (add))
             frid = cur.fetchall()[0][0]
 
             cur.execute("""UPDATE main SET friends = friends || %s WHERE name = (%s);""", ([frid], main))
+
+            conn.commit()
+            cur.close()
+            conn.close()
             return True
         except BaseException as err:
             print("[function add_friend]",err)
             return False
     else:
         print("[function add_friend] username was not found")
-        return False
+        return False   
 
-    conn.commit()
-    cur.close()
-    conn.close()     
+def check_name(name, f):
+    """adds friend to a specific user
+
+    Args:
+        main: The name of the user add friend too
+        add: The friend name that you want to add to "add"
+
+    Returns:
+        a list of string that are friends of the user searched
+        
+        #? Normal Operation
+            return [str, str ...]
+        #? Threw Execption
+            return []
+    Raises:
+    """
+    try:
+        conn, cur = Database()
+
+        cur.execute("""SELECT name FROM main WHERE name LIKE %s""", (name+"%",))
+        res = list(cur.fetchall()[0])
+
+        fri = get_friends(f)
+        fri.append(f)
+
+        cur.close()
+        conn.close()
+
+        if set(fri) & set(res):
+            print("[function check_name] cannot add this person")
+            return []
+        else:
+            print("[function check_name] This is allowed")
+            return res
+    except BaseException as e:
+        print("[function check_name]", e)
+        return []
 
 def check_internet():
     return NotImplementedError
@@ -359,13 +459,14 @@ TODO - How to send the Private Key Securely
 
     Info* = All information need to make a account
 
-    Client            Server 
+    Client                        Server 
     Info* --------->
+
     VVjavascriptVV
     create key pair 
     store private key in Computer desktop
     send public key to key server idgaf
-                <----- load Route main
+                    <------- load Route "main"
 
 
 
