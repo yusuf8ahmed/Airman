@@ -12,10 +12,8 @@ var socket = io();
 
 console.log("Name =>",name);
 
-socket.emit('get_friend', [name]);
-
 socket.on('connect', function () {
-    socket.emit('get_friends', name);
+    socket.emit('get_friends_list', name);
 });
 
 socket.on('test', function (data) {
@@ -112,28 +110,28 @@ socket.on('receive_history', function(msg){
 
 socket.on('friends_set', function(msg) {
     console.log("friends", msg);
+    document.getElementById("friendslist").innerHTML = "";
     const list = document.getElementById("friendslist");
     var friend = msg[0];
 
     for (var i = 0; i < msg.length; i++) {
         let div = document.createElement('div');
         div.innerHTML = 
-        `<button class="btn btn-primary btn-lg active btn-block mt-1 mb-1 flist" onclick="Receive(this, this.innerHTML);">${msg[i]}</button>`;
+        `<button class="btn btn-outline-secondary btn-lg active btn-block mt-1 mb-1 flist" onclick="Receive(this, this.innerHTML);">${msg[i]}</button>`;
         list.appendChild(div);        
     }
 });
 
-socket.on('add_friends', function(msg) {
+socket.on('add_friend', function(msg) {
     console.log("Added list", msg);
     document.getElementById("add_friend_box").innerHTML = '';
     const friend_box = document.getElementById("add_friend_box"); 
     for (var i = 0; i < msg.length; i++) {
         let div = document.createElement('div');
         div.innerHTML = 
-        `<button class="btn btn-primary btn-lg active btn-block mt-1 mb-1 flist" onclick="alert('that is gay')">${msg[i]}</button>`;
+        `<button class="btn btn-primary btn-lg active btn-block mt-1 mb-1 flist" onclick="Addfriend(this,this.innerHTML)">${msg[i]}</button>`;
         friend_box.appendChild(div);        
     }
-    
 });
 
 const msg = document.getElementById("user_message");
@@ -157,12 +155,6 @@ addfriend.addEventListener('input', function(e) {
     }
 });
 
-function ScrollDown() {
-    console.log("Scrolling Down");
-    const chatWindow = document.getElementById("messlist");
-    chatWindow.lastChild.scrollIntoView({behavior: "smooth"});
-}
-
 function Receive(t, getname) {
     cchat = true;
     friend = getname;  
@@ -175,14 +167,10 @@ function Receive(t, getname) {
 }
 
 function Addfriend(t, getname) {
-    cchat = true;
+    t.disabled = true;
     friend = getname;  
-    console.log(`<p>${name}&${friend}</p>`);
-    document.getElementById("messlist").innerHTML = "";
-    document.getElementsByClassName("messagename").innerHTML = `<p>${name}&${friend}</p>`;
-    document.getElementsByClassName("display_message")[0].style.display = "block";
-    document.getElementsByClassName("display_main")[0].style.display = "none";
-    socket.emit('receive', {'main':name, 'get': friend, 'time':Math.floor(Date.now() / 1000)});
+    document.getElementById("friendslist").innerHTML = "";
+    socket.emit('add_friends', [name, friend]);
 }
 
 function Send() {
@@ -199,6 +187,12 @@ function Send() {
         document.getElementById("user_message").value = '';
         console.log("Sent Message", send_obj);       
     }
+}
+
+function ScrollDown() {
+    console.log("Scrolling Down");
+    const chatWindow = document.getElementById("messlist");
+    chatWindow.lastChild.scrollIntoView({behavior: "smooth"});
 }
 
 function Home(){

@@ -53,7 +53,7 @@ Get messages
             'Hello my friend' 
         )
 
-    ? FRIENDS table:
+    ? FRIENDS row:
         CREATE TABLE friends (
         send TEXT NOT NULL,
         recv TEXT NOT NULL,
@@ -68,5 +68,9 @@ Get messages
         UPDATE main
         SET friends = friends || '{"2cca5350-3f7", ""}'
         WHERE name = '1';
+
+    ? Convo Table
+
+    ? Add to convo 
 
 """
