@@ -95,7 +95,6 @@ socket.on('receive_history', function(msg){
                             <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
                         </div>
                     -->
-                    
                     <div class="msg_cotainer">
                         ${msg.messages[i][3]}
                         <span class="msg_time">${k}</span>
@@ -117,7 +116,7 @@ socket.on('friends_set', function(msg) {
     for (var i = 0; i < msg.length; i++) {
         let div = document.createElement('div');
         div.innerHTML = 
-        `<button class="btn btn-outline-secondary btn-lg active btn-block mt-1 mb-1 flist" onclick="Receive(this, this.innerHTML);">${msg[i]}</button>`;
+        `<button class="btn btn-outline-primary btn-lg btn-block mt-1 mb-1 flist" onclick="Receive(this, this.innerHTML);">${msg[i]}</button>`;
         list.appendChild(div);        
     }
 });

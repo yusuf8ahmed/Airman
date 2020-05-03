@@ -434,15 +434,16 @@ def add_friend(main, add):
     
     if t[0] == True:
         try:
-            cur.execute("""SELECT uuid FROM main WHERE name = (%s);""", (add,))
-            print(cur.mogrify("""SELECT uuid FROM main WHERE name = (%s);""", (add,)))
-            frid = cur.fetchall()[0][0]
+            frid = get_uuid_name(add)
 
             cur.execute("""UPDATE main SET friends = friends || %s WHERE name = (%s);""", ([frid], main,))
             print(cur.mogrify("""UPDATE main SET friends = friends || %s WHERE name = (%s);""", ([frid], main,)))
 
+            cur.execute("""UPDATE main SET friends = friends || %s WHERE name = (%s);""", ([get_uuid_name(main)], add,))
+            print(cur.mogrify("""UPDATE main SET friends = friends || %s WHERE name = (%s);""", ([get_uuid_name(main)], add,)))
+
             roomid = str(randint(1000000000000000,9999999999999999))
-            cur.execute("""INSERT INTO convo (userone, usertwo, convoid) VALUES (%s,%s,%s);""", (main, add,roomid,))
+            cur.execute("""INSERT INTO convo (userone, usertwo, convoid) VALUES (%s,%s,%s);""", (main, add, roomid,))
             print(cur.mogrify("""INSERT INTO convo (userone, usertwo, convoid) VALUES (%s,%s,%s);""", (main, add,roomid,)))
 
             conn.commit()
@@ -455,6 +456,60 @@ def add_friend(main, add):
     else:
         print("[function add_friend] username was not found")
         return False   
+
+def get_uuid_name(name):
+    try:
+        conn, cur = Database()
+
+        cur.execute("""SELECT uuid FROM main WHERE name=%s""", (name,))
+
+        query_result = cur.fetchall()[0][0]
+        print(f"name:{name} to uuid:{query_result}")
+        cur.close()
+        conn.close()
+        return query_result    
+    except BaseException as e:
+        print(f"[function get_uuid]: {e}")
+        return '' 
+
+def get_name_uuid(uuid):
+    try:
+        conn, cur = Database()
+
+        cur.execute("""SELECT name FROM "public"."main" WHERE uuid=%s""", (uuid,))
+
+        query_result = cur.fetchall()[0][0]
+        print(f"uuid:{uuid} to name:{query_result} ")
+        cur.close()
+        conn.close()
+        return query_result    
+    except BaseException as e:
+        print(f"[function get_uuid]: {e}")
+        return ''
+
+def get_friends_status(name, r):
+    f = get_friends(name)
+    e = {}
+    for x in f:
+        if r.get(x) == "True":
+            e[x] = "on"
+        elif r.get(x) == "False":
+            e[x] = "off"
+        elif r.get(x) == None:
+            e[x] = "off"
+        else:
+            e[x] = "off"
+    print(f"User {name} <",e)
+    return e
+
+def delete_all(name):
+    #UPDATE main SET friends = '{}' WHERE name = '4'
+    return NotImplementedError
+
+def delete_convoid():
+    #DELETE FROM convo WHERE userone='4'
+    return NotImplementedError
+
 
 """
 Crypto Setup

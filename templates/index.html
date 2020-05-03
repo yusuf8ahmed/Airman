@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 	<link rel="stylesheet" href="{{ url_for('static',filename='css/index.css') }}">
+	<script defer src="{{ url_for('static',filename='js/index.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/openpgp@4.10.2/dist/openpgp.min.js"></script>
     <title>Airman</title>
 </head>
     <body style="background: linear-gradient(to right, #74ebd5, #acb6e5); overscroll-behavior: none; overscroll-behavior-y: none;">
         <nav class="navbar navbar-expand-lg navbar-light" style="background-color: transparent;">
             <a class="navbar-brand" onclick="ShowMain()" style="cursor:pointer;" href="{{ url_for('main') }}">
-                <img src="{{ url_for('static',filename='img/logo.svg') }}" width="30" height="30" class="d-inline-block align-top" >
+                <img src="{{ url_for('static',filename='img/logo.svg') }}" width="30" height="30" class="d-inline-block align-top">
                 Airman
             </a>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
@@ -28,7 +29,7 @@
 				</div>
 				<div class="col-sm-6">
 					<div class="login mt-3">
-						<form action="{{ url_for('login') }}" method="POST">
+						<form id="loginForm" action="{{ url_for('login') }}" method="POST">
 							<div class="form-group">
 								<label for="formGroupExampleInput">Username</label>
 								<input class="form-control" id="formGroupExampleInput" name="name" type="text" required>
@@ -53,12 +54,12 @@
 					<div class="login mt-4">
 						<div class="alert alert-danger" id="error" role="alert" style="display: none;">
 						</div>
-						<form action="{{ url_for('register') }}" method="POST" onsubmit="return ValidateForm();">
+						<form id="regisForm" method="POST" enctype="multipart/form-data" >
 							<div class="form-group">
 								<div class="form-row">
 									<div class="col">
 										<label for="frist">Firstname</label>
-										<input class="form-control" id="frist" name="first" type="text" required>
+										<input class="form-control" id="frist" name="first" type="text" autofocus required>
 									</div>
 									<div class="col">
 										<label for="last">Lastname</label>
@@ -128,7 +129,8 @@
 				</div>
 			</div>
 		</div>
-		  
-    <script src="{{ url_for('static',filename='js/index.js') }}"></script>
+		<script>
+			var regis = "{{ url_for('register') }}";
+		</script>
     </body>
 </html>

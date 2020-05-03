@@ -22,12 +22,12 @@ from helper import make_user, check_account
 from helper import get_history, get_friends
 from helper import push_messages, get_room
 from helper import add_friend, check_name
+from helper import get_friends_status
 # Custom Functions 
 
 # source env/bin/activate
 # to use pip = python3 -m pip
-# thread = None
-# thread_lock = Lock()
+
 #  Clear repo commit history 
 #  git checkout --orphan latest_branch
 #  git add -A
@@ -41,6 +41,8 @@ app.config['ENV'] = 'development'
 app.config['SECRET_KEY'] = str(secrets.token_urlsafe(16))
 socketio = SocketIO(app)
 
+thread = None
+thread_lock = Lock()
 r = redis.from_url(os.environ.get("REDIS"))
 
 @app.route('/index', methods=['POST', 'GET'])
@@ -53,6 +55,7 @@ def logout():
     print("logout User", session.get('username'))
     session.pop('username', None)
     session.pop('uuid', None)
+    r.set(session['username'], "False")
     return make_response(redirect(url_for('main')))
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -63,9 +66,8 @@ def login():
     if (e[0] == True):
         print("[Route login] Log in user", request.form["name"])
         session['username'] = request.form["name"]
-        session['uid'] = uuid.uuid4()
-        r.set(session['username'], json.dumps([]))
-        
+        session['uid'] = str(uuid.uuid4())[:12]
+        r.set(session['username'], "True")
         return make_response(redirect(url_for('appd')))
     elif(request.form == ImmutableMultiDict([])):
         print("[Route login] Empty Form Sent")
@@ -100,13 +102,22 @@ def appd():
 
 #---------------------Socket.io Handlers or Views-----------------------#
 
+def friend_thread(name):
+    """Example of how to send server generated events to clients."""
+    count = 0
+    while True:
+        socketio.sleep(5)
+        n = get_friends_status(name, r)
+        socketio.emit('active', {'active': [n]})
+
 @socketio.on('connect')
 def connect_handle():
+    print(session)
     print(">>>>>>>>>Socket.io Started<<<<<<<<<")
 
 @socketio.on('disconnect')
 def connect_handle():
-    print(">>>>>>>>>Socket.io   Ended<<<<<<<<<")
+    print(">>>>>>>>>Socket.io Ended<<<<<<<<<<<")
 
 @socketio.on('receive')
 def history_handle(arg):
@@ -136,6 +147,10 @@ def get_friends_handle(arg):
     # arg[0] is the name for checking
     print("Getting friends for", arg[0])
     r = get_friends(arg[0])
+    global thread
+    with thread_lock:
+        if thread is None:
+            thread = socketio.start_background_task(friend_thread, arg[0])
     print(r)
     emit('friends_set', r)
 

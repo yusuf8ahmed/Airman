@@ -6,23 +6,22 @@
         <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
         <link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
         <script defer src="{{ url_for('static',filename='js/app.js') }}">
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous">
         </script>
         <script src="https://kit.fontawesome.com/f89d46e90e.js" crossorigin="anonymous">
         </script>
-        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous">
         </script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
         </script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
-        </script>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        </script> 
         <title>Airman</title>   
     </head>
-
     <body style="background: linear-gradient(to right, #74ebd5, #acb6e5); overscroll-behavior: none; scroll-behavior: smooth;"> 
         <nav class="navbar navbar-expand-lg navbar-light" style="background-color: transparent;">
             <a class="navbar-brand" style="cursor:pointer;">
@@ -33,7 +32,9 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a class="nav-item nav-link" style="cursor:pointer;" href="">Sup, {{ username|safe }}</a>
-                    <a class="nav-item nav-link" style="cursor:pointer;" href="{{ url_for('logout') }}">logout</a>
+                </div>
+                <div class="navbar-nav ml-auto">
+                    <a class="nav-item nav-link float-right" style="cursor:pointer;" href="{{ url_for('logout') }}">logout</a>
                 </div>
             </div>
         </nav>
@@ -42,18 +43,17 @@
             <div class="container m-0">
                 <div class="row">
                     <div class="col-sm-3 mt-3 border-right border-dark" style="height: calc(100vh - 80px);">
-                        <div class="mt-3">
-                            <button class="btn btn-outline-secondary btn-lg active btn-block" onclick="Home()">
+                        <div class="mt-3 overflow-auto">
+                            <button class="btn btn-outline-primary btn-lg btn-block mt-1 mb-1" onclick="Home()" >
                                 Home
-                            </button>  
+                            </button> 
+                            </div>                            
                             <div id="friendslist">
-                            </div>                             
+                            </div> 
+                            <button class="btn btn-outline-primary btn-lg btn-block mt-1 mb-1" data-toggle="modal" data-target="#exampleModal" type="button">
+                                <div class=""><i class="fas fa-plus"></i></div>
+                            </button>                           
                         </div>
-                        <button class="btn btn-primary fixed-top ml-2 mb-2 " data-toggle="modal" data-target="#exampleModal" type="button">
-                            <div class="float-right">
-                                <i class="fas fa-plus"></i>    
-                            </div>
-                        </button>
                         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -76,7 +76,7 @@
                         </div>
                     </div>
                     <div class="col-sm-9 mt-3"> 
-                        <div class="display_main" style="display: block;">
+                        <div class="display_main" style="display: none;">
                             <div class="jumbotron jumbotron-fluid mt-3 mb-3" style="background-color: transparent;">
                                 <div class="container">
                                     <h1 class="display-4">Welcome To Airman, {{ username|safe }}</h1>
@@ -110,8 +110,6 @@
             var name = "{{- username|safe -}}";
             var csocket;
             var cchat = false;
-
         </script>
     </body>
-
 </html>
