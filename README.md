@@ -1,6 +1,6 @@
 <p align="center">
   <a>
-    <img src="https://i.ibb.co/1r8jGSs/logoJPG.jpg" alt="logoJPG" border="0">
+    <img src="https://i.ibb.co/1LQbYvK/logo-INVJPG.jpg" alt="logo-INVJPG" border="0">
     <br>
     <img src="https://forthebadge.com/images/badges/oooo-kill-em.svg">
     <img src="https://forthebadge.com/images/badges/made-with-crayons.svg">
