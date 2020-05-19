@@ -8,6 +8,12 @@
  *
  */
 
+if (location.protocol === "https") {
+    console.log("secure");
+} else {
+    console.log("unsecure");
+}
+
 var socket = io();
 
 console.log("Name =>",name);
@@ -27,35 +33,9 @@ socket.on('receive_message', function (msg) {
     let div = document.createElement('div');
 
     if (name === msg[0]) {
-        div.innerHTML = 
-            `
-            <div class="d-flex justify-content-end mb-4 animated slideInUp">
-                <!--
-                <div class="img_cont_msg">
-                    <img src="" class="rounded-circle user_img_msg">
-                </div>
-                -->
-                <div class="msg_cotainer_send">
-                    ${msg[2]}
-                    <span class="msg_time_send">${new Date(msg[3]*1000).toLocaleDateString()}</span>
-                </div>
-            </div>
-            `;            
+        div.innerHTML = `<div class="d-flex justify-content-end mb-4 animated slideInUp"><div class="msg_cotainer_send">${msg[2]}<span class="msg_time_send">${new Date(msg[3]*1000).toLocaleDateString()}</span></div></div>`;            
     } else {
-        div.innerHTML = 
-            `
-            <div class="d-flex justify-content-start mb-4 animated slideInUp">
-                <!--
-                    <div class="img_cont_msg">
-                        <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
-                    </div>
-                -->
-                <div class="msg_cotainer">
-                    ${msg[2]}
-                    <span class="msg_time">${new Date(msg[3]*1000).toLocaleDateString()}</span>
-                </div>
-            </div>
-            `;
+        div.innerHTML = `<div class="d-flex justify-content-start mb-4 animated slideInUp"><div class="msg_cotainer">${msg[2]}<span class="msg_time">${new Date(msg[3]*1000).toLocaleDateString()}</span></div></div>`;
     }
     mess.appendChild(div);  
     ScrollDown();            
@@ -72,35 +52,9 @@ socket.on('receive_history', function(msg){
         const k = `${new Date(msg.messages[i][2]*1000).toLocaleDateString()}`;
 
         if (name === msg.messages[i][0]) {
-            div.innerHTML = 
-                `
-                <div class="d-flex justify-content-end mb-4 animated slideInUp">
-                    <!--
-                    <div class="img_cont_msg">
-                        <img src="" class="rounded-circle user_img_msg">
-                    </div>
-                    -->
-                    <div class="msg_cotainer_send">
-                        ${msg.messages[i][3]}
-                        <span class="msg_time_send">${k}</span>
-                    </div>
-                </div>
-                `;            
+            div.innerHTML = `<div class="d-flex justify-content-end mb-4 animated slideInUp"><div class="msg_cotainer_send">${msg.messages[i][3]}<span class="msg_time_send">${k}</span></div></div>`;            
         } else {
-            div.innerHTML = 
-                `
-                <div class="d-flex justify-content-start mb-4 animated slideInUp">
-                    <!--
-                        <div class="img_cont_msg">
-                            <img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img_msg">
-                        </div>
-                    -->
-                    <div class="msg_cotainer">
-                        ${msg.messages[i][3]}
-                        <span class="msg_time">${k}</span>
-                    </div>
-                </div>
-                `;
+            div.innerHTML = `<div class="d-flex justify-content-start mb-4 animated slideInUp"><div class="msg_cotainer">${msg.messages[i][3]}<span class="msg_time">${k}</span></div></div>`;
         }
         mess.appendChild(div);    
         ScrollDown();            
@@ -115,8 +69,7 @@ socket.on('friends_set', function(msg) {
 
     for (var i = 0; i < msg.length; i++) {
         let div = document.createElement('div');
-        div.innerHTML = 
-        `<button class="btn btn-outline-primary btn-lg btn-block mt-1 mb-1 flist" onclick="Receive(this, this.innerHTML);">${msg[i]}</button>`;
+        div.innerHTML = `<button class="btn btn-outline-primary btn-lg btn-block mt-1 mb-1 flist" onclick="Receive(this, this.innerHTML);">${msg[i]}<span id="st_${msg[i]}"></span></button>`;
         list.appendChild(div);        
     }
 });
@@ -127,9 +80,16 @@ socket.on('add_friend', function(msg) {
     const friend_box = document.getElementById("add_friend_box"); 
     for (var i = 0; i < msg.length; i++) {
         let div = document.createElement('div');
-        div.innerHTML = 
-        `<button class="btn btn-primary btn-lg active btn-block mt-1 mb-1 flist" onclick="Addfriend(this,this.innerHTML)">${msg[i]}</button>`;
+        div.innerHTML = `<button class="btn btn-primary btn-lg active btn-block mt-1 mb-1 flist" onclick="Addfriend(this,this.innerHTML)">${msg[i]}</button>`;
         friend_box.appendChild(div);        
+    }
+});
+
+socket.on('active', function(status) {
+    console.dir(status);
+    for (const prop in status.active) {
+        console.dir(`st_${prop}`, ` (${status.active[prop]})`);
+        document.getElementById(`st_${prop}`).innerText = ` (${status.active[prop]})`;
     }
 });
 
@@ -157,7 +117,7 @@ addfriend.addEventListener('input', function(e) {
 function Receive(t, getname) {
     cchat = true;
     friend = getname;  
-    console.log(`<p>${name}&${friend}</p>`);
+    document.getElementById("messname").innerHTML = `${name} & ${friend}`;
     document.getElementById("messlist").innerHTML = "";
     document.getElementsByClassName("messagename").innerHTML = `<p>${name}&${friend}</p>`;
     document.getElementsByClassName("display_message")[0].style.display = "block";
@@ -200,3 +160,4 @@ function Home(){
     document.getElementsByClassName("display_message")[0].style.display = "none";
     document.getElementById("messlist").innerHTML = "";
 }
+

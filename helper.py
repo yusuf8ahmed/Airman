@@ -2,6 +2,7 @@
 import os
 import uuid
 import json
+import time
 import itertools
 import datetime
 from random import randint
@@ -13,7 +14,6 @@ from psycopg2 import OperationalError
 from psycopg2.extras import DictCursor
 # Psycopg2 Database
 import urllib.parse as urlparse
-# Thrid Party libary
 
 def Database(dict_option=False):
     """Connection to Remote Database
@@ -491,15 +491,17 @@ def get_friends_status(name, r):
     f = get_friends(name)
     e = {}
     for x in f:
-        if r.get(x) == "True":
-            e[x] = "on"
-        elif r.get(x) == "False":
-            e[x] = "off"
-        elif r.get(x) == None:
-            e[x] = "off"
+        o = r.get(x)
+        if type(o) == bytes:
+            o = o.decode("utf-8")
+            if o == "True":
+                e[x] = "on"
+            elif o == "False":
+                e[x] = "off"
         else:
             e[x] = "off"
-    print(f"User {name} <",e)
+
+    print(f"User {name} <",e,round(time.time()))
     return e
 
 def delete_all(name):
@@ -541,6 +543,12 @@ TODO - How to send the Private Key Securely
     send public key to key server idgaf
                     <------- load Route "main"
 
+    -----
+
+    message -------->
+    VVjavascriptVV
+    encrypt with others public key
+
 
 
     all variable and any other related code will be "del"
@@ -550,7 +558,8 @@ TODO - How to store the Public Key Securely
 
 """
 
-        
+if __name__  == '__main__':
+    print("This is a file of assorted function and should not be treated as a script")
         
         
         

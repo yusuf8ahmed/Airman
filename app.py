@@ -3,6 +3,7 @@ import os
 import time
 import json
 import uuid
+import random
 import secrets
 from threading import Lock
 #Python lib
@@ -12,7 +13,7 @@ from flask import redirect, session
 #Flask lib
 from flask_socketio import SocketIO, send
 from flask_socketio import emit, join_room
-from flask_socketio import leave_room
+from flask_socketio import leave_room, disconnect
 #Socket.io lib
 import redis
 # #redis lib
@@ -52,12 +53,14 @@ def main():
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
-    print("logout User", session.get('username'))
-    session.pop('username', None)
-    session.pop('uuid', None)
-    r.set(session['username'], "False")
-    return make_response(redirect(url_for('main')))
-
+    try:
+        print("logout User", session.get('username'))
+        r.set(session['username'], "False")
+        session.pop('username', None)
+        session.pop('uuid', None)
+        return make_response(redirect(url_for('main')))
+    except:
+        return make_response(redirect(url_for('main')))
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     print(request.form)
@@ -88,8 +91,8 @@ def register():
         session['friends'] = []
         return make_response(redirect(url_for('appd')))
     else:
-        print("[Route Register] Failed to Enter App")
-        return render_template('index.html', error=True, errormessage=e[1])
+        print("[Route Register] Failed to Enter App:", e[1])
+        return make_response(redirect(url_for('main')))
     
 @app.route('/app', methods=['POST', 'GET'])
 def appd():
@@ -102,13 +105,13 @@ def appd():
 
 #---------------------Socket.io Handlers or Views-----------------------#
 
-def friend_thread(name):
+def friend_thread(name, t):
     """Example of how to send server generated events to clients."""
-    count = 0
+    print(f"Getting Status for {name}")
     while True:
         socketio.sleep(5)
         n = get_friends_status(name, r)
-        socketio.emit('active', {'active': [n]})
+        socketio.emit('active', {'active': n}, room=t)
 
 @socketio.on('connect')
 def connect_handle():
@@ -147,10 +150,12 @@ def get_friends_handle(arg):
     # arg[0] is the name for checking
     print("Getting friends for", arg[0])
     r = get_friends(arg[0])
+    t = str(random.randint(123456789,987654321))
+    join_room(t)
     global thread
     with thread_lock:
         if thread is None:
-            thread = socketio.start_background_task(friend_thread, arg[0])
+            thread = socketio.start_background_task(friend_thread, arg[0], t)
     print(r)
     emit('friends_set', r)
 
@@ -168,11 +173,19 @@ def add_friends_handle(arg):
 @socketio.on('find_friends')
 def find_friends_handle(arg):
     # ['1']
-    # arg[0] is the name you are looking for
+    # arg[0] is the name 
     print("Looking for", arg[0], "w/", arg[1])
     r = check_name(arg[0], arg[1])
     print(r)
     emit('add_friend', r)
+
+# @socketio.on('close')
+# def history_handle(arg):
+#     # ['1']
+#     # arg[0] is the name 
+#     print("arg[0] is logging out")
+#     disconnect()
+#     r.set(arg[0], "False")
     
 
 if __name__ == "__main__":

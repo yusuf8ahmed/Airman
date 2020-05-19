@@ -3,23 +3,18 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="pragma" content="no-cache" />
         <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" />
         <link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-        <script defer src="{{ url_for('static',filename='js/app.js') }}">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous">
-        </script>
-        <script src="https://kit.fontawesome.com/f89d46e90e.js" crossorigin="anonymous">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous">
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-        </script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
-        </script> 
+        <script defer src="{{ url_for('static',filename='js/app.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/f89d46e90e.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> 
         <title>Airman</title>   
     </head>
     <body style="background: linear-gradient(to right, #74ebd5, #acb6e5); overscroll-behavior: none; scroll-behavior: smooth;"> 
@@ -38,22 +33,18 @@
                 </div>
             </div>
         </nav>
-
         <div class="main" style="display: block;">
             <div class="container m-0">
                 <div class="row">
                     <div class="col-sm-3 mt-3 border-right border-dark" style="height: calc(100vh - 80px);">
                         <div class="mt-3 overflow-auto">
-                            <button class="btn btn-outline-primary btn-lg btn-block mt-1 mb-1" onclick="Home()" >
-                                Home
-                            </button> 
-                            </div>                            
+                            <button class="btn btn-outline-primary btn-lg btn-block mt-1 mb-1" onclick="Home()" >Home</button>                            
                             <div id="friendslist">
                             </div> 
-                            <button class="btn btn-outline-primary btn-lg btn-block mt-1 mb-1" data-toggle="modal" data-target="#exampleModal" type="button">
+                            <button class="align-self-end btn btn-outline-primary btn-lg btn-block mt-1 mb-1 " data-toggle="modal" data-target="#exampleModal" type="button">
                                 <div class=""><i class="fas fa-plus"></i></div>
-                            </button>                           
-                        </div>
+                            </button>    
+                        </div>                           
                         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
@@ -88,16 +79,16 @@
                                 </div>
                             </div>                           
                         </div>
+                        <div id="messname" style="font-size: 18px; font-weight: bold;">   
+                        </div> 
                         <div class="display_message mt-2" style="display: none;">
-                            <div class="messagename">
-                            </div>
-                            <div id="messlist" style="height: calc(100vh - 185px); overflow-y: scroll">
+                            <div id="messlist" style="height: calc(100vh - 185px); overflow-y: scroll">  
                             </div>  
                             <div class="position-sticky">
                                 <div class="input-group  mb-5 mt-3">
                                     <input class="form-control" id="user_message" type="text" minlength="1" maxlength="30" required>
                                     <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" id="send_message" type="button" onclick="Send()">Send</button>
+                                        <button class="btn btn-outline-secondary" id="send_message" type="button" onclick="Send()">Send</button>
                                     </div>
                                 </div>                             
                             </div>
@@ -111,5 +102,6 @@
             var csocket;
             var cchat = false;
         </script>
+
     </body>
 </html>
